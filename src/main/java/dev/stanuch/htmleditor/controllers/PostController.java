@@ -2,6 +2,7 @@ package dev.stanuch.htmleditor.controllers;
 
 import dev.stanuch.htmleditor.entities.Post;
 import dev.stanuch.htmleditor.repositories.PostRepository;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,8 +27,16 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public String showPost(Post post) {
+    public String showAddPostForm(Post post) {
         return "add-post";
+    }
+
+    @GetMapping(value = "post/preview/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    public String showPostPreview(@PathVariable("id") long id, Model model) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
+        model.addAttribute("post", post);
+        return "preview-post";
     }
 
     /*
