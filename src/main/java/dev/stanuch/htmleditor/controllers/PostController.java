@@ -20,6 +20,11 @@ public class PostController {
         this.postRepository = postRepository;
     }
 
+    @GetMapping("/")
+    public String redirectToIndex() {
+        return "redirect:/index";
+    }
+
     @GetMapping("/post")
     public String showPost(Post post) {
         return "add-post";
