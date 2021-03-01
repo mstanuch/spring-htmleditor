@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.validation.Valid;
 
@@ -43,6 +44,31 @@ public class PostController {
     public String addPost(@Valid Post post, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-post";
+        }
+
+        postRepository.save(post);
+        return "redirect:/index";
+    }
+
+    @GetMapping("/post/edit/{id}")
+    public String updatePost(@PathVariable("id") long id, Model model) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user post Id: " + id));
+
+        model.addAttribute("post", post);
+        return "update-post";
+    }
+
+    /*
+        @TODO:
+          another thing to investigate,
+          why POST instead of PUT?!
+     */
+    @PostMapping("/post/update/{id}")
+    public String updatePost(@PathVariable("id") long id, @Valid Post post, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            post.setId(id);
+            return "update-post";
         }
 
         postRepository.save(post);

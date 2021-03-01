@@ -1,0 +1,18 @@
+<form
+    action="#"
+    th:action="@{/post/update/{id}(id=${post.id})}"
+    th:object="${post}"
+    method="post"
+>
+    <label for="name">Title</label>
+    <input type="text" th:field="*{name}" id="name" placeholder="Post title" />
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+
+    <label for="content">Content</label>
+    <textarea th:field="*{content}" id="content" placeholder="Post Content"></textarea>
+    <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
+
+    <button type="submit">
+        Update post
+    </button>
+</form>
