@@ -1,8 +1,5 @@
 package dev.stanuch.htmleditor.entities;
 
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
