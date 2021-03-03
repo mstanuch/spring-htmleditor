@@ -50,8 +50,10 @@ public class PostController {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
 
+        String contentDispositionValue = "attachment; filename=\"" + post.getName() + ".html\"";
+
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Disposition", "attachment; filename=\"" + post.getName() + ".html\"");
+        responseHeaders.set(HttpHeaders.CONTENT_DISPOSITION, contentDispositionValue);
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
