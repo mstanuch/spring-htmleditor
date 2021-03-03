@@ -1,5 +1,7 @@
 <h2 th:text="${post.name}"></h2>
 
+<a th:href="@{/post/download/{id}(id=${post.id})}">Download post content</a>
+
 <div>
     [(${post.content})]
 </div>

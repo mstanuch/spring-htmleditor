@@ -2,14 +2,15 @@ package dev.stanuch.htmleditor.controllers;
 
 import dev.stanuch.htmleditor.entities.Post;
 import dev.stanuch.htmleditor.repositories.PostRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.validation.Valid;
 
@@ -37,6 +38,24 @@ public class PostController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
         model.addAttribute("post", post);
         return "preview-post";
+    }
+
+    @GetMapping(
+            value = "post/download/{id}",
+            produces = MediaType.TEXT_HTML_VALUE
+    )
+    public ResponseEntity<?> downloadPost(
+            @PathVariable("id") long id
+    ) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Content-Disposition", "attachment; filename=\"" + post.getName() + ".html\"");
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(post.getContent());
     }
 
     /*

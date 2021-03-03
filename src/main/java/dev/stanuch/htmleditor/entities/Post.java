@@ -11,18 +11,18 @@ import lombok.Setter;
 @Entity
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NotEmpty(message = "Name is mandatory")
     @Getter
     @Setter
+    @NotEmpty(message = "Name is mandatory")
     private String name;
 
-    @NotEmpty(message = "Content is mandatory")
     @Getter
     @Setter
+    @NotEmpty(message = "Content is mandatory")
     private String content;
 }
