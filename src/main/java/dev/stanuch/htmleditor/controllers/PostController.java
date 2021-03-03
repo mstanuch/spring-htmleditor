@@ -1,7 +1,8 @@
 package dev.stanuch.htmleditor.controllers;
 
 import dev.stanuch.htmleditor.entities.Post;
-import dev.stanuch.htmleditor.repositories.PostRepository;
+import dev.stanuch.htmleditor.services.PostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,8 @@ import javax.validation.Valid;
 
 @Controller
 public class PostController {
-    private final PostRepository postRepository;
-
-    PostController(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
+    @Autowired
+    PostService postService;
 
     @GetMapping("/")
     public String redirectToIndex() {
@@ -32,23 +30,16 @@ public class PostController {
         return "add-post";
     }
 
-    @GetMapping(value = "post/preview/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "post/preview/{id}")
     public String showPostPreview(@PathVariable("id") long id, Model model) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
+        Post post = postService.getPost(id);
         model.addAttribute("post", post);
         return "preview-post";
     }
 
-    @GetMapping(
-            value = "post/download/{id}",
-            produces = MediaType.TEXT_HTML_VALUE
-    )
-    public ResponseEntity<?> downloadPost(
-            @PathVariable("id") long id
-    ) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
+    @GetMapping(value = "post/download/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<?> downloadPost(@PathVariable("id") long id) {
+        Post post = postService.getPost(id);
 
         String contentDispositionValue = "attachment; filename=\"" + post.getName() + ".html\"";
 
@@ -68,9 +59,7 @@ public class PostController {
      */
     @GetMapping("/post/delete/{id}")
     public String deletePost(@PathVariable("id") long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + id));
-        postRepository.delete(post);
+        postService.deletePost(id);
 
         return "redirect:/index";
     }
@@ -81,15 +70,13 @@ public class PostController {
             return "add-post";
         }
 
-        postRepository.save(post);
+        postService.savePost(post);
         return "redirect:/index";
     }
 
     @GetMapping("/post/edit/{id}")
     public String updatePost(@PathVariable("id") long id, Model model) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user post Id: " + id));
-
+        Post post = postService.getPost(id);
         model.addAttribute("post", post);
         return "update-post";
     }
@@ -106,13 +93,16 @@ public class PostController {
             return "update-post";
         }
 
-        postRepository.save(post);
+        postService.savePost(post);
         return "redirect:/index";
     }
 
     @GetMapping("/index")
     public String showPostList(Model model) {
-        model.addAttribute("posts", postRepository.findAll());
+        model.addAttribute(
+                "posts",
+                postService.getAllPosts()
+        );
         return "index";
     }
 }
