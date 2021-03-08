@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,14 +43,19 @@ public class PostService {
         ExecutorService sseExecutor = Executors.newSingleThreadExecutor();
         sseExecutor.execute(() -> {
             try {
-                for (int i = 0; true; i++) {
+                Date lastPostLastModifiedDateSent = Date.from(Instant.ofEpochSecond(0));
+                while (true) {
                     Post post = this.getPost(id);
+                    Date postLastModifiedDate = post.getLastModifiedDate();
 
-                    SseEmitter.SseEventBuilder event = SseEmitter.event()
-                            .data(post.getContent(), MediaType.APPLICATION_JSON)
-                            .id(String.valueOf(i))
-                            .name("Post update");
-                    emitter.send(event);
+                    if (postLastModifiedDate.after(lastPostLastModifiedDateSent)) {
+                        lastPostLastModifiedDateSent = post.getLastModifiedDate();
+
+                        SseEmitter.SseEventBuilder event = SseEmitter.event()
+                                .data(post.getContent(), MediaType.APPLICATION_JSON)
+                                .name("post-update");
+                        emitter.send(event);
+                    }
                     Thread.sleep(1000);
                 }
             } catch (Exception ex) {
