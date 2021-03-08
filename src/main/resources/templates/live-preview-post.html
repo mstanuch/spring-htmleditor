@@ -1,0 +1,39 @@
+
+Post Live Preview
+
+<div id="preview-status">Connecting...</div>
+
+<div id="post-content"></div>
+
+<script type="text/javascript">
+    const previewStatusElement = document.getElementById("preview-status");
+    const postContentElement = document.getElementById("post-content");
+    const postId = window.location.pathname.split('/')[3]
+
+    const eventSource = new EventSource(`/post/preview/${postId}/sse`);
+    eventSource.onopen = function () {
+        previewStatusElement.innerText = "Connected!"
+    }
+    eventSource.onmessage = function (event) {
+        const {
+            createdAt,
+            updatedAt,
+            title,
+            content
+        } = JSON.parse(event.data);
+
+        postContentElement.innerHTML = `
+            <h1>${title}</h1>
+            <div style="font-size: 0.7rem">
+                <span>Created at: ${createdAt}</span>
+                <span>Updated at: ${updatedAt}</span>
+            </div>
+            <div>
+                ${content}
+            </div>
+        `;
+    }
+    eventSource.onerror = function () {
+        previewStatusElement.innerText = "Error :("
+    }
+</script>

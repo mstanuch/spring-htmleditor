@@ -38,6 +38,11 @@ public class PostController {
         return "preview-post";
     }
 
+    @GetMapping("post/preview/{id}/live")
+    public String showLivePostPreview() {
+        return "live-preview-post";
+    }
+
     @GetMapping("post/preview/{id}/sse")
     public SseEmitter stream(@PathVariable("id") long id) {
         SseEmitter postPreviewSseEmitter = postService.getPostLivePreviewSseStream(id);

@@ -8,6 +8,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,9 +53,15 @@ public class PostService {
                     if (postLastModifiedDate.after(lastPostLastModifiedDateSent)) {
                         lastPostLastModifiedDateSent = post.getLastModifiedDate();
 
+                        Map<String, String> postData = new HashMap<>();
+                        postData.put("title", post.getName());
+                        postData.put("content", post.getContent());
+                        postData.put("createdAt", post.getCreatedDate().toString());
+                        postData.put("updatedAt", post.getLastModifiedDate().toString());
+
                         SseEmitter.SseEventBuilder event = SseEmitter.event()
-                                .data(post.getContent(), MediaType.APPLICATION_JSON)
-                                .name("post-update");
+                                .data(postData, MediaType.APPLICATION_JSON)
+                                .name("message");
                         emitter.send(event);
                     }
                     Thread.sleep(1000);

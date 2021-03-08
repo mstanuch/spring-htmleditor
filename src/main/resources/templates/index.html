@@ -19,6 +19,7 @@
                 <td th:text="${post.content}"></td>
                 <td>
                     <a th:href="@{/post/preview/{id}(id=${post.id})}">Preview</a>
+                    <a th:href="@{/post/preview/{id}/live(id=${post.id})}">Live Preview</a>
                     <a th:href="@{/post/edit/{id}(id=${post.id})}">Edit</a>
                     <a th:href="@{/post/delete/{id}(id=${post.id})}">Delete</a>
                 </td>
