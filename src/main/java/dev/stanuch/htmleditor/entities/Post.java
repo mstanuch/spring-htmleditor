@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class Post {
+public class Post extends Auditable {
     @Id
     @Getter
     @Setter
