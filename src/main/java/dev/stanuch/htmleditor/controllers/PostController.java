@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.validation.Valid;
 
@@ -30,11 +31,17 @@ public class PostController {
         return "add-post";
     }
 
-    @GetMapping(value = "post/preview/{id}")
+    @GetMapping("post/preview/{id}")
     public String showPostPreview(@PathVariable("id") long id, Model model) {
         Post post = postService.getPost(id);
         model.addAttribute("post", post);
         return "preview-post";
+    }
+
+    @GetMapping("post/preview/{id}/sse")
+    public SseEmitter stream(@PathVariable("id") long id) {
+        SseEmitter postPreviewSseEmitter = postService.getPostLivePreviewSseStream(id);
+        return  postPreviewSseEmitter;
     }
 
     @GetMapping(value = "post/download/{id}", produces = MediaType.TEXT_HTML_VALUE)
