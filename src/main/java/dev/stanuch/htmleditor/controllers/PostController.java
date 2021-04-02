@@ -63,12 +63,6 @@ public class PostController {
                 .body(post.getContent());
     }
 
-    /*
-     @TODO:
-       investigate it,
-       because @DeleteMapping does not work as expected
-       and @GetMapping instead of delete method is required to make it work as expected!
-     */
     @GetMapping("/post/delete/{id}")
     public String deletePost(@PathVariable("id") long id) {
         postService.deletePost(id);
@@ -93,11 +87,6 @@ public class PostController {
         return "update-post";
     }
 
-    /*
-        @TODO:
-          another thing to investigate,
-          why POST instead of PUT?!
-     */
     @PostMapping("/post/update/{id}")
     public String updatePost(@PathVariable("id") long id, @Valid Post post, BindingResult result, Model model) {
         if (result.hasErrors()) {
