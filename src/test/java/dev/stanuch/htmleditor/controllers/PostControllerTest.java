@@ -19,6 +19,15 @@ public class PostControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    void shouldRedirectToIndex() throws Exception {
+        this.mockMvc
+            .perform(
+                get("/")
+            )
+            .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
     void shouldReturnForm() throws Exception {
         this.mockMvc
             .perform(
@@ -30,5 +39,14 @@ public class PostControllerTest {
                     content()
                         .string(containsString("<form"))
                 );
+    }
+
+    @Test
+    void whenGetNotExistingPostIdShouldThrowError() throws Exception {
+        this.mockMvc
+            .perform(
+                get("/post/123")
+            )
+                .andExpect(status().is4xxClientError());
     }
 }
